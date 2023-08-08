@@ -26,7 +26,7 @@ contract CashLess {
         personDetails[msg.sender] = Person({
             name: _name,
             class: _class,
-            balance: 0,
+            balance: personDetails[msg.sender].balance,
             created : true
         });
     }
