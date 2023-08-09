@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 contract CashLess {
-    address payable public  authority;
+    address  authority;
     struct Person {
         string name;
         string class;
@@ -12,7 +12,7 @@ contract CashLess {
     mapping (address => Person)  personDetails;
 
     constructor (string memory _name) {
-        authority = payable(msg.sender);
+        authority = msg.sender;
         // personDetails[msg.sender] = Person({
         //     name : "Authority",
         //     class : "Authority",
@@ -47,30 +47,41 @@ contract CashLess {
     function setBalance (address _address, uint _amount) public {
         require(msg.sender==authority, "Only Authority can give tokens");
         require(personDetails[msg.sender].balance >= _amount, "You don't have sufficient balance. Pelease add tokens.");
+        require(personDetails[_address].created == true, "Account not created yet.");
         transfer(authority, _address, _amount);
     }
 
     function makePayment (address _seller, uint _amount) external {
         require(personDetails[msg.sender].balance >= _amount, "You don't have sufficient balance to payment. Please add tokens.");
+        require(personDetails[_seller].created == true, "Account not created yet.");
         transfer(msg.sender, _seller, _amount);
     }
 
     function withDraw (uint _amount) external {
         require(personDetails[msg.sender].balance >= _amount, "You don't have sufficient balance to withdraw.");
+        require(msg.sender != authority, "Authority can't withdraw.");
         transfer(msg.sender, authority, _amount);
     }
 
     function getBalance () public view returns (uint) {
+        require(personDetails[msg.sender].created == true, "Account not created yet.");
         return personDetails[msg.sender].balance;
     }
 
     function Details (address _address) public view returns (string memory, string memory, uint) {
         require(msg.sender == authority || msg.sender == _address, "You don't have permission to see details.");
+        require(personDetails[_address].created == true, "Account not created yet.");
         return (
             personDetails[_address].name,
             personDetails[_address].class,
             personDetails[_address].balance
         );
     }
+    function authorityDetails () public view returns (string memory, string memory) {
+         return (
+            personDetails[authority].name,
+            personDetails[authority].class
+        );
+    } 
     
 }
