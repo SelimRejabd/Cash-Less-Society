@@ -13,14 +13,8 @@ contract CashLess {
 
     constructor (string memory _name) {
         authority = msg.sender;
-        // personDetails[msg.sender] = Person({
-        //     name : "Authority",
-        //     class : "Authority",
-        //     balance : 0,
-        //     created : true
-        // });
-        createAccount(_name, "Authority");
 
+        createAccount(_name, "Authority");
     }
 
     function addMoney (uint _amount) public {
@@ -82,6 +76,15 @@ contract CashLess {
             personDetails[authority].name,
             personDetails[authority].class
         );
-    } 
-    
+    }
+
+    function loginCheck (address addr) external view returns (string memory) {
+        if (addr == authority) {
+            return "athority";
+        }
+        if (personDetails[addr].created == true) {
+            return "user";
+        }
+        return "notUser";
+    }
 }
